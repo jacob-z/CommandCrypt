@@ -45,6 +45,7 @@ from tendo import singleton
 from Crypto.Cipher import AES
 from Crypto import Random
 
+
 SALT_BYTES = 32			# Number of bytes to salt the password with
 ITERATIONS = 100000 	# Number of times to apply the hash function
 
@@ -110,15 +111,14 @@ def readPlaintextFile(filename):
 		return f.read()
 
 
-def writePlaintextFile(filename, p):
+def writePlaintextFile(filename, p, dest):
 	"""Write decrypted contents to file.
 
 	Args:
 		filename (str): The file to be read.
 		p (str): The contents to be written to file.
 	"""
-	parts = filename.split("/")
-	filename = "/".join(parts[:-1]) + "/DEC" + parts[-1]
+	filename = dest + "/DEC" + filename.split("/")[-1]
 	with open(filename, 'w') as f:
 		f.write(p)
 
@@ -137,24 +137,23 @@ def readCyphertextFile(filename):
 		c = base64.b64decode(c)
 		salt = c[:SALT_BYTES]
 		iv = c[SALT_BYTES : (SALT_BYTES+AES.block_size)]
-		c = c[(SALT_BYTES+AES.block_size) : ]
+		c = c[(SALT_BYTES+AES.block_size):]
 		return (salt, iv, c)
 
 
-def writeCyphertextFile(filename, c):
+def writeCyphertextFile(filename, c, dest):
 	"""Write encrypted contents to file.
 
 	Args:
 		filename (str): The file to be read.
 		c (str): The contents to be written to file.
 	"""
-	parts = filename.split("/")
-	filename = "/".join(parts[:-1]) + "/ENC" + parts[-1]	
+	filename = dest + "/ENC" + filename.split("/")[-1]	
 	with open(filename, 'w') as f:
 		f.write(c)
 
 
-def encrypt(filename, passphrase):
+def encrypt(filename, passphrase, dest):
 	"""Encrypt the contents of filename with AES128 and writes the file to disk.
 
 	Args:
@@ -166,10 +165,10 @@ def encrypt(filename, passphrase):
 	iv = Random.new().read(AES.block_size)
  	aes = AES.new(password, AES.MODE_CFB, iv)
  	c = base64.b64encode(salt + iv + aes.encrypt(p))
- 	writeCyphertextFile(filename, c)
+ 	writeCyphertextFile(filename, c, dest)
 
 
-def decrypt(filename, passphrase):
+def decrypt(filename, passphrase, dest):
 	"""Decrypt the contents of filename with AES128 and writes the file to disk.
 
 	Args:
@@ -179,11 +178,13 @@ def decrypt(filename, passphrase):
 	salt, iv, c = readCyphertextFile(filename)
 	password, tmp = _generatePassword(passphrase, salt) 
 	if (tmp != salt):
-		sys.stdout.write("CommandCrypt: decrypt: Error processing file.")
+		sys.stdout.write(tmp + "\t" + str(len(tmp)) + "\n")
+		sys.stdout.write(salt + "\t" + str(len(salt)) + "\n")
+		sys.stdout.write("CommandCrypt: decrypt: Error processing file.\n")
 		sys.exit(1)
 	aes = AES.new(password, AES.MODE_CFB, iv)
  	p = aes.decrypt(c)
- 	writePlaintextFile(filename, p)
+ 	writePlaintextFile(filename, p, dest)
 
 
 def main(argv):
@@ -199,6 +200,8 @@ def main(argv):
 	files   = list(args['files'])
 	recurse = args['recurse']
 	dest    = os.path.abspath("".join(args['directory']))
+
+	print dest
 
 	if (op == encrypt) and recurse:
 		sys.stdout.write("Recursively encrypting " + ", ".join(files))
@@ -222,7 +225,7 @@ def main(argv):
 					files.append(path + "/" + f)
 		elif (os.path.isfile(path)):
 			print "Processing: " + path
-			op(path, passphrase)
+			op(path, passphrase, dest)
 		else:
 			sys.stderr.write("CommandCrypt: Error processing files\n")
 			sys.exit(1)
