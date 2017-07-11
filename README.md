@@ -6,6 +6,7 @@ right from the command line. Specify single files or whole directories.
 You can also give a directory where the processed files will be stored.
  
 Example:
+
         The default options for CommandCrypt are to encrypt the files specified in
         the immediate command line arguments.  If a directory is provided, only the
         files in the first level of the directory will be encrypted.  The resulting
@@ -27,7 +28,9 @@ Example:
                 $ python CommandCrypt.py samplefile.txt --dest ./resultDir
  
 Attributes:
+
         SALT_BYTES (int): The number of bytes to be used when salting passwords.
+        
         ITERATIONS (int): The number of times to apply the hash function to itself.
  
 Todo:
