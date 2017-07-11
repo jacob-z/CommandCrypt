@@ -101,5 +101,5 @@ ENV/
 .mypy_cache/
 
 # Additional Files to Ignore
-tmp
-tmp/*
+./tmp
+./tmp/*
