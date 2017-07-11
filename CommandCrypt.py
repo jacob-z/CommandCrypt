@@ -2,6 +2,8 @@
 
 """Author: Jacob Zimmer
 
+*** Free to use with attribution. ***
+
 CommandCrypt may be used to encrypt and decrypt files using AES 128 encryption 
 right from the command line. Specify single files or whole directories.  
 You can also give a directory where the processed files will be stored.
@@ -82,7 +84,7 @@ def testPBKFD2():
 	"""Run timing tests on the password generating function."""
 	print "Starting timing tests: "
 	times = {}
-	for pwdSize in range(1,101, 20):
+	for pwdSize in range(1,51, 10):
 		pwd = ''.join(['%c' % x for x in range(65, 65+pwdSize)])
 		times[pwd] = 0
 		print "Password: (" + str(pwdSize) + ") " + pwd
