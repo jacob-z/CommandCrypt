@@ -34,6 +34,7 @@ Attributes
         ITERATIONS (int): The number of times to apply the hash function to itself.
  
 Todo
+
         * Add padding to smaller files
         
         * Store encrypted files in the specified destination
