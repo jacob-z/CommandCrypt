@@ -40,7 +40,7 @@ Todo:
 
 """
 
-import argparse, sys, os, base64, hashlib, timeit
+import argparse, sys, os, base64, hashlib, timeit, getpass
 from tendo import singleton
 from Crypto.Cipher import AES
 from Crypto import Random
@@ -168,6 +168,8 @@ def encrypt(filename, passphrase, dest):
  	writeCyphertextFile(filename, c, dest)
 
 
+
+### BROKEN ###
 def decrypt(filename, passphrase, dest):
 	"""Decrypt the contents of filename with AES128 and writes the file to disk.
 
@@ -178,8 +180,6 @@ def decrypt(filename, passphrase, dest):
 	salt, iv, c = readCyphertextFile(filename)
 	password, tmp = _generatePassword(passphrase, salt) 
 	if (tmp != salt):
-		sys.stdout.write(tmp + "\t" + str(len(tmp)) + "\n")
-		sys.stdout.write(salt + "\t" + str(len(salt)) + "\n")
 		sys.stdout.write("CommandCrypt: decrypt: Error processing file.\n")
 		sys.exit(1)
 	aes = AES.new(password, AES.MODE_CFB, iv)
@@ -193,15 +193,12 @@ def main(argv):
 	Args:
 		argv (list): The command line arguments to process.
 	"""
-
 	args = _addCLArguments()
 
 	op      = args['operation']
 	files   = list(args['files'])
 	recurse = args['recurse']
 	dest    = os.path.abspath("".join(args['directory']))
-
-	print dest
 
 	if (op == encrypt) and recurse:
 		sys.stdout.write("Recursively encrypting " + ", ".join(files))
@@ -214,7 +211,7 @@ def main(argv):
 
 	sys.stdout.write("\nThe result will be stored in " + dest + "\n")
 
-	passphrase = raw_input("Enter password to continue: ")
+	passphrase = getpass.getpass("Enter password to continue: ")
 
 	for file in files:
 		path = os.path.abspath(file)
