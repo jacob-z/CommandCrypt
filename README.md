@@ -1,6 +1,8 @@
 # CommandCrypt
 Encrypt/Decrypt files from the command line.
 
+DECRYPTION IS BROKEN
+
 CommandCrypt may be used to encrypt and decrypt files using AES 128 encryption 
 right from the command line. Specify single files or whole directories.  
 You can also give a directory where the processed files will be stored.
